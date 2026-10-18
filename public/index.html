@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korbcheck – Wo ist dein Einkauf am günstigsten?</title>
+<meta name="description" content="Einkaufskorb-Preisvergleich für Aldi, Lidl, Kaufland, Rewe und Edeka mit Live-Preisen und aktuellen Angeboten.">
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Cpath d='M14 22h36l-4 24H18z' fill='none' stroke='white' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M24 22l6-10M40 22l-6-10' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f4f6f5;--card:#fff;--ink:#14201d;--mut:#5d6b67;--line:#e2e8e5;--acc:#0f766e;--acc2:#e6f4f1;--good:#15803d;--goodbg:#dcfce7;--off:#c2410c;--offbg:#ffedd5;--est:#8a9692;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 16px rgba(0,0,0,.05);--r:14px}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1513;--card:#16201d;--ink:#e7efec;--mut:#9aa9a4;--line:#26332f;--acc:#2dd4bf;--acc2:#11302b;--good:#4ade80;--goodbg:#123321;--off:#fb923c;--offbg:#3a2212;--est:#7c8a85;--shadow:none}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--acc)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+header.top{background:var(--acc);color:#fff}
+@media (prefers-color-scheme:dark){header.top{background:#0b3b36}}
+header.top .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.brand h1{margin:0;font-size:24px;letter-spacing:-.02em}
+.brand p{margin:0;opacity:.85;font-size:13px}
+.plz{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.14);padding:6px;border-radius:12px}
+.plz label{font-size:13px;padding-left:6px;opacity:.9}
+.plz input{width:92px;border:0;border-radius:8px;padding:8px 10px;color:#14201d;background:#fff;font-weight:600;letter-spacing:.05em}
+.btn{border:0;border-radius:10px;padding:9px 14px;background:var(--acc);color:#fff;font-weight:600}
+.btn.light{background:#fff;color:#0f766e}
+.btn.ghost{background:transparent;color:var(--acc);border:1px solid var(--line)}
+.btn:disabled{opacity:.6;cursor:wait}
+.status{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:14px 0 4px;color:var(--mut);font-size:13px}
+.status b{color:var(--ink)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.warn{background:var(--offbg);color:var(--off);padding:8px 12px;border-radius:10px;font-size:13px;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px;font-size:13px;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);padding:4px 10px;border-radius:99px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.d-live{background:var(--good)}.d-offer{background:var(--off)}.d-est{background:var(--est)}.d-own{background:#6366f1}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+@media (max-width:960px){.layout{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.tools{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.search{flex:1 1 220px;min-width:0;position:relative}
+.search input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px 10px 36px}
+.search svg{position:absolute;left:11px;top:11px;opacity:.5}
+.cats{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.cats button{white-space:nowrap;border:1px solid var(--line);background:transparent;border-radius:99px;padding:5px 12px;font-size:13px}
+.cats button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.thead,.row{display:grid;grid-template-columns:minmax(120px,1.6fr) repeat(5,minmax(58px,1fr)) 96px;align-items:center;gap:4px;padding:8px 12px}
+.thead{position:sticky;top:0;background:var(--card);z-index:2;font-size:12px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line);border-radius:var(--r) var(--r) 0 0}
+.thead div{text-align:center}.thead div:first-child{text-align:left}
+.row{border-bottom:1px solid var(--line)}
+.row.has{background:var(--acc2)}
+.catrow{padding:14px 12px 6px;font-weight:700;font-size:13px;color:var(--acc)}
+.pn{min-width:0}
+.pn b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.pn small{color:var(--mut)}
+.pn .del{border:0;background:none;color:var(--mut);font-size:12px;padding:0;text-decoration:underline}
+.cell{position:relative;border:1px solid transparent;background:none;border-radius:9px;padding:6px 2px;text-align:center;line-height:1.15;min-height:44px}
+.cell:hover{border-color:var(--line);background:var(--bg)}
+.cell .v{font-weight:650;font-variant-numeric:tabular-nums}
+.cell .k{display:block;font-size:10.5px;color:var(--mut);margin-top:2px}
+.cell.live .v::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:4px;vertical-align:2px}
+.cell.offer .v{color:var(--off)}
+.cell.offer .k{color:var(--off);font-weight:600}
+.cell.est .v,.cell.derived .v{color:var(--est);font-weight:500}
+.cell.own .v{color:#6366f1}
+.cell.best{background:var(--goodbg);border-color:transparent}
+.cell.best .v{color:var(--good)}
+.cell.na .v{color:var(--est)}
+.qty{display:flex;align-items:center;justify-content:flex-end;gap:4px}
+.qty button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:17px;line-height:1}
+.qty button.add{background:var(--acc);color:#fff;border-color:var(--acc)}
+.qty span{min-width:20px;text-align:center;font-weight:700}
+@media (max-width:720px){
+ .thead{display:none}
+ .row{grid-template-columns:repeat(5,1fr);gap:4px 2px}
+ .pn{grid-column:1/4}.qty{grid-column:4/6;grid-row:1}
+ .cell::after{content:attr(data-s);display:block;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
+}
+.empty{padding:28px;text-align:center;color:var(--mut)}
+.bon{position:sticky;top:12px;padding:16px}
+@media (max-width:960px){.bon{position:static}}
+.bon h2{margin:0 0 4px;font-size:18px}
+.bon .sub{color:var(--mut);font-size:13px;margin-bottom:12px}
+.tot{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;padding:9px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--line)}
+.tot .bar{grid-column:1/3;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.tot .bar i{display:block;height:100%;background:var(--acc)}
+.tot.win{border-color:var(--good);background:var(--goodbg)}
+.tot.win .bar i{background:var(--good)}
+.tot .n{font-weight:650}.tot .s{font-weight:700;font-variant-numeric:tabular-nums}
+.tot small{grid-column:1/3;color:var(--mut);font-size:12px}
+.save{margin-top:12px;padding:12px;border-radius:12px;background:var(--acc2);font-size:14px}
+.save b{font-size:18px}
+.lines{margin-top:12px;font-size:13px;max-height:260px;overflow:auto}
+.lines div{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.mbar{display:none}
+@media (max-width:960px){.mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));justify-content:space-between;align-items:center;box-shadow:0 -4px 16px rgba(0,0,0,.08)}body{padding-bottom:70px}}
+dialog{border:0;border-radius:18px;padding:0;max-width:520px;width:calc(100% - 24px);background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg{padding:20px}
+.dlg h3{margin:0 0 2px;font-size:18px}
+.dlg .x{float:right;border:0;background:var(--bg);border-radius:50%;width:32px;height:32px;font-size:18px}
+.big{font-size:30px;font-weight:750;margin:10px 0 2px;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.t-live{background:var(--goodbg);color:var(--good)}.t-offer{background:var(--offbg);color:var(--off)}.t-est{background:var(--bg);color:var(--mut);border:1px solid var(--line)}.t-own{background:#e0e7ff;color:#4338ca}
+.box{background:var(--bg);border-radius:12px;padding:12px;margin:12px 0;font-size:14px}
+.box p{margin:4px 0}
+.mut{color:var(--mut)}
+.own{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.own input{width:110px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 10px}
+.res{padding:12px;border-bottom:1px solid var(--line);background:var(--acc2)}
+.res h3{margin:0 0 8px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.ri{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.ri .st{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--mut);letter-spacing:.04em}
+.ri .nm{font-weight:600;font-size:14px}
+.ri .pr{font-size:17px;font-weight:750}
+.ri .btn{padding:6px 10px;font-size:13px;margin-top:auto;align-self:flex-start}
+footer{color:var(--mut);font-size:12px;padding:24px 16px 40px;max-width:1180px;margin:0 auto}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#14201d;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+ <div class="brand">
+  <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="rgba(255,255,255,.18)"/><path d="M14 22h36l-4 24H18z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/><path d="M24 22l6-10M40 22l-6-10" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>
+  <div><h1>Korbcheck</h1><p>Wo ist dein Einkauf heute am günstigsten?</p></div>
+ </div>
+ <form class="plz" id="plzForm">
+  <label for="plz">Deine PLZ</label>
+  <input id="plz" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="12345" autocomplete="postal-code" required>
+  <button class="btn light" id="reload" type="submit">Preise holen</button>
+ </form>
+</div></header>
+
+<main class="wrap">
+ <div class="status" id="status"></div>
+ <div class="legend">
+  <span><i class="dot d-live"></i>Live-Preis (heute geprüft)</span>
+  <span><i class="dot d-offer"></i>Angebot aus dem Prospekt</span>
+  <span><i class="dot d-est"></i>≈ geschätzt</span>
+  <span><i class="dot d-own"></i>von dir eingetragen</span>
+  <span>Tippe auf einen Preis für Details</span>
+ </div>
+ <div class="layout">
+  <section class="card" aria-label="Produkte">
+   <div class="tools">
+    <div class="search">
+     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+     <input id="q" type="search" placeholder="Produkt suchen, z. B. Nutella, Kaffee, Skyr …" autocomplete="off">
+    </div>
+    <button class="btn" id="webSearch" type="button">Im Internet suchen</button>
+    <button class="btn ghost" id="onlyBasket" type="button" aria-pressed="false">Nur mein Korb</button>
+   </div>
+   <div id="results"></div>
+   <div class="cats" id="cats"></div>
+   <div class="thead"><div>Produkt</div><div>Aldi</div><div>Lidl</div><div>Kaufland</div><div>Rewe</div><div>Edeka</div><div style="text-align:right">Menge</div></div>
+   <div id="list"></div>
+  </section>
+  <aside class="card bon" id="bon" aria-label="Kassenbon"></aside>
+ </div>
+</main>
+<div class="mbar" id="mbar"></div>
+<footer>
+ <p><b>Woher kommen die Preise?</b> Aldi-Preise stammen live aus dem Online-Sortiment von Aldi Süd, Rewe-Preise live aus dem Rewe-Markt in der Nähe deiner Postleitzahl. Angebote aller Märkte kommen tagesaktuell aus den Prospekten (über marktguru.de) für deine Postleitzahl. Lidl, Kaufland und Edeka veröffentlichen ihre normalen Regalpreise nicht im Internet – dort zeigen wir ohne Angebot einen geschätzten Preis (z. B. nach der vergleichbaren Aldi- bzw. Rewe-Eigenmarke), deutlich mit ≈ markiert.</p>
+ <p>Preise werden auf die angegebene Menge umgerechnet (z. B. 2-kg-Packung → Preis für 1 kg). Pfand ist nicht enthalten. Alle Angaben ohne Gewähr – im Laden kann es abweichen. Siehst du einen anderen Preis, tippe darauf und trage ihn ein.</p>
+</footer>
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORES=[["aldi","Aldi"],["lidl","Lidl"],["kaufland","Kaufland"],["rewe","Rewe"],["edeka","Edeka"]];
+const LS="korbcheck.v2";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur=v=>v==null?"–":v.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
+const dfmt=d=>d?new Date(d).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"}):"";
+const tfmt=d=>new Date(d).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+" Uhr";
+
+let st={plz:"",qty:{},over:{},custom:[],cat:-1,only:false};
+try{const old=JSON.parse(localStorage.getItem(LS)||"null");if(old)st={...st,...old}}catch{}
+try{const v1=JSON.parse(localStorage.getItem("korbcheck.v1")||"null");if(v1&&!localStorage.getItem(LS)){st.qty=v1.qty||{}}}catch{}
+const save=()=>localStorage.setItem(LS,JSON.stringify(st));
+
+let CATS=[],BASE=[],prices={},meta=null,loading=false,lastErr=null,searchRes=null;
+
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2200)}
+
+const allProducts=()=>[...BASE,...st.custom.map(c=>({...c,custom:true}))];
+
+// Preis einer Zelle: eigener Wert > Live/Angebot > Schätzung
+function info(p,si){
+  const s=STORES[si][0], o=st.over[p.id]&&st.over[p.id][s];
+  const d=prices[p.id]&&prices[p.id][si];
+  if(o) return {v:o.v,kind:"own",t:o.t,data:d};
+  if(d) return {...d,data:d};
+  if(p.est&&p.est[si]!=null) return {v:p.est[si],kind:"estimate"};
+  return null;
+}
+const isEst=i=>i&&(i.kind==="estimate"||i.kind==="derived");
+
+async function loadProducts(){
+  const r=await fetch("/api/products");const j=await r.json();CATS=j.cats;BASE=j.products;
+}
+async function loadPrices(){
+  if(!/^\d{5}$/.test(st.plz))return;
+  if(!loading)prices={};
+  loading=true;lastErr=null;renderStatus();$("#reload").disabled=true;
+  try{
+    const r=await fetch("/api/prices?plz="+st.plz);if(!r.ok)throw new Error("HTTP "+r.status);
+    const j=await r.json();prices={...prices,...j.items};meta=j;
+    if(j.pending){render();renderStatus();clearTimeout(loadPrices.t);loadPrices.t=setTimeout(loadPrices,2500);return}
+    if(st.custom.length)await loadCustom();
+  }catch(e){lastErr="Die Live-Preise konnten gerade nicht geladen werden. Es werden Schätzwerte angezeigt – bitte später noch einmal „Preise holen“ tippen."}
+  loading=false;$("#reload").disabled=false;render();
+}
+async function loadCustom(only){
+  const items=(only||st.custom).map(c=>({id:c.id,q:c.q,a:c.a,u:c.uu}));
+  if(!items.length)return;
+  const r=await fetch("/api/custom",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({plz:st.plz,items})});
+  if(!r.ok)return;const j=await r.json();Object.assign(prices,j.items);
+}
+
+function renderStatus(){
+  const el=$("#status");
+  if(!st.plz){el.innerHTML=`<span>Bitte oben deine <b>Postleitzahl</b> eingeben, damit wir die Preise und Angebote in deiner Gegend holen können. Bis dahin siehst du Schätzwerte.</span>`;return}
+  if(loading||(meta&&meta.pending)){const n=meta&&meta.pending?Object.keys(meta.items).length:0;el.innerHTML=`<span><i class="spin"></i> Hole aktuelle Preise und Angebote für <b>${esc(st.plz)}</b> …${n?` ${n} von ${BASE.length} Produkten fertig`:""} (beim ersten Mal bis zu 30 Sekunden)</span>`;return}
+  let h="";
+  if(meta){
+    const ps=allProducts().map(p=>STORES.map((_,i)=>info(p,i))).flat().filter(Boolean);
+    const nl=ps.filter(i=>i.kind==="live").length,no=ps.filter(i=>i.kind==="offer").length;
+    const m=meta.reweMarket||{};
+    h+=`<span>Stand: <b>${tfmt(meta.updated)}</b></span><span>PLZ <b>${esc(meta.plz)}</b></span>`;
+    if(m.street&&!m.fallback)h+=`<span>Rewe-Markt: <b>${esc(m.street)}, ${esc(m.city||"")}</b></span>`;
+    h+=`<span><b>${nl}</b> Live-Preise · <b>${no}</b> Angebote</span>`;
+    const bad=Object.keys(meta.status||{});
+    if(bad.length)h+=`<div class="warn" style="flex-basis:100%">Gerade nicht erreichbar: ${bad.map(b=>({aldi:"Aldi",rewe:"Rewe",angebote:"Prospekt-Angebote"}[b]||b)).join(", ")}. Dort werden Schätzwerte gezeigt.</div>`;
+  }
+  if(lastErr)h+=`<div class="warn" style="flex-basis:100%">${esc(lastErr)}</div>`;
+  el.innerHTML=h;
+}
+
+function renderCats(){
+  const c=["Alle",...CATS];if(st.custom.length)c.push("Meine Produkte");
+  $("#cats").innerHTML=c.map((n,i)=>`<button type="button" data-c="${i-1}" class="${st.cat===i-1?"on":""}">${esc(n)}</button>`).join("");
+}
+
+function cellHtml(p,si,best){
+  const i=info(p,si),sn=STORES[si][1];
+  if(!i)return `<button class="cell na" data-p="${esc(p.id)}" data-i="${si}" data-s="${sn}" type="button"><span class="v">–</span></button>`;
+  const cls={live:"live",offer:"offer",estimate:"est",derived:"derived",own:"own"}[i.kind];
+  let k="";
+  if(i.kind==="offer")k=i.loyalty?"Angebot · App":"Angebot"+(i.until?" bis "+dfmt(i.until):"");
+  else if(i.kind==="live")k=i.until?"Aktion bis "+dfmt(i.until):"live";
+  else if(i.kind==="own")k="eigener";
+  else k="geschätzt";
+  return `<button class="cell ${cls}${best?" best":""}" data-p="${esc(p.id)}" data-i="${si}" data-s="${sn}" type="button" title="Details ansehen"><span class="v">${isEst(i)?"≈ ":""}${eur(i.v)}</span><span class="k">${k}</span></button>`;
+}
+
+function renderList(){
+  const q=$("#q").value.trim().toLowerCase();
+  let ps=allProducts();
+  const custC=CATS.length;
+  if(st.cat>=0)ps=ps.filter(p=>st.cat===custC?p.custom:(!p.custom&&p.c===st.cat));
+  if(q)ps=ps.filter(p=>p.n.toLowerCase().includes(q));
+  if(st.only)ps=ps.filter(p=>st.qty[p.id]>0);
+  if(!ps.length){$("#list").innerHTML=`<div class="empty">${st.only?"Dein Korb ist noch leer. Tippe bei einem Produkt auf <b>+</b>.":q?`Nichts in der Liste gefunden. Tippe auf <b>„Im Internet suchen“</b>, um „${esc(q)}“ live bei allen Märkten zu suchen.`:"Keine Produkte."}</div>`;return}
+  const groups=new Map();
+  for(const p of ps){const g=p.custom?"Meine Produkte":CATS[p.c];if(!groups.has(g))groups.set(g,[]);groups.get(g).push(p)}
+  let h="";
+  for(const [g,list] of groups){
+    h+=`<div class="catrow">${esc(g)}</div>`;
+    for(const p of list){
+      const vals=STORES.map((_,i)=>info(p,i)?.v??Infinity),min=Math.min(...vals),allSame=vals.every(v=>v===min),n=st.qty[p.id]||0;
+      h+=`<div class="row${n?" has":""}"><div class="pn"><b title="${esc(p.n)}">${esc(p.n)}</b><small>${esc(p.u)}${p.note?" · "+esc(p.note):""}</small>${p.custom?` <button class="del" data-del="${esc(p.id)}" type="button">entfernen</button>`:""}</div>`;
+      h+=STORES.map((_,i)=>cellHtml(p,i,isFinite(min)&&!allSame&&vals[i]===min)).join("");
+      h+=`<div class="qty">${n?`<button type="button" data-m="${esc(p.id)}" aria-label="weniger">−</button><span>${n}</span>`:""}<button type="button" class="add" data-a="${esc(p.id)}" aria-label="mehr">+</button></div></div>`;
+    }
+  }
+  $("#list").innerHTML=h;
+}
+
+function totals(){
+  const items=allProducts().filter(p=>st.qty[p.id]>0);
+  const t=STORES.map((_,si)=>{let sum=0,est=0,miss=0;for(const p of items){const i=info(p,si);if(!i){miss++;continue}sum+=i.v*st.qty[p.id];if(isEst(i))est++}return {sum,est,miss}});
+  let split=0;const plan={};
+  for(const p of items){let b=null;STORES.forEach((s,si)=>{const i=info(p,si);if(i&&(!b||i.v<b.v))b={v:i.v,si}});if(b){split+=b.v*st.qty[p.id];(plan[b.si]=plan[b.si]||[]).push(p)}}
+  return {items,t,split,plan};
+}
+
+function renderBon(){
+  const {items,t,split,plan}=totals();
+  const count=items.reduce((a,p)=>a+st.qty[p.id],0);
+  if(!items.length){
+    $("#bon").innerHTML=`<h2>Dein Einkaufskorb</h2><div class="sub">Lege Produkte mit <b>+</b> in den Korb. Hier siehst du dann sofort, welcher Markt insgesamt am günstigsten ist.</div>`;
+    $("#mbar").innerHTML=`<span class="mut">Korb ist leer</span>`;return;
+  }
+  const order=STORES.map((s,si)=>({si,...t[si]})).filter(x=>!x.miss).sort((a,b)=>a.sum-b.sum);
+  const partial=STORES.map((s,si)=>({si,...t[si]})).filter(x=>x.miss);
+  const max=Math.max(...order.map(o=>o.sum),0.01);
+  let h=`<h2>Dein Einkaufskorb</h2><div class="sub">${count} Artikel · Summe je Markt</div>`;
+  order.forEach((o,k)=>{h+=`<div class="tot${k===0?" win":""}"><span class="n">${STORES[o.si][1]}${k===0?' <span class="tag t-live">am günstigsten</span>':""}</span><span class="s">${eur(o.sum)}</span><div class="bar"><i style="width:${Math.round(o.sum/max*100)}%"></i></div>${o.est?`<small>${o.est} von ${items.length} Preisen geschätzt</small>`:""}</div>`});
+  partial.forEach(o=>{h+=`<div class="tot"><span class="n">${STORES[o.si][1]}</span><span class="s mut">${eur(o.sum)}</span><small>unvollständig: ${o.miss} Produkt(e) dort ohne Preis</small></div>`});
+  if(order.length>1){
+    const best=order[0],worst=order[order.length-1];
+    h+=`<div class="save">Bei <b>${STORES[best.si][1]}</b> sparst du <b>${eur(worst.sum-best.sum)}</b> gegenüber ${STORES[worst.si][1]}.`;
+    const groups=Object.keys(plan);
+    if(groups.length>1&&best.sum-split>=0.5)h+=`<br><br>Wer in mehreren Märkten einkauft, zahlt nur <b>${eur(split)}</b>: ${groups.map(si=>`${STORES[si][1]} (${plan[si].length})`).join(", ")}.`;
+    h+=`</div>`;
+  }
+  const bs=order[0]?order[0].si:0;
+  h+=`<div class="lines">${items.map(p=>{const i=info(p,bs);return `<div><span>${st.qty[p.id]}× ${esc(p.n)}</span><span>${i?eur(i.v*st.qty[p.id]):"–"}</span></div>`}).join("")}</div>`;
+  h+=`<div class="own" style="margin-top:12px"><button class="btn ghost" type="button" id="clear">Korb leeren</button><button class="btn ghost" type="button" id="share">Liste teilen</button></div>`;
+  $("#bon").innerHTML=h;
+  $("#mbar").innerHTML=order.length?`<span>${count} Artikel · am günstigsten: <b>${STORES[bs][1]} ${eur(order[0].sum)}</b></span><button class="btn" type="button" onclick="document.getElementById('bon').scrollIntoView({behavior:'smooth'})">Korb</button>`:"";
+}
+
+function render(){renderStatus();renderCats();renderList();renderBon()}
+
+const KIND={live:["Live-Preis","t-live"],offer:["Angebot","t-offer"],estimate:["Geschätzt","t-est"],derived:["Geschätzt","t-est"],own:["Von dir eingetragen","t-own"]};
+function sourceText(i,si){
+  const s=STORES[si][0];
+  if(i.kind==="live")return s==="aldi"?"Heute live aus dem Online-Sortiment von Aldi Süd abgerufen.":`Heute live aus dem Sortiment deines Rewe-Markts${meta&&meta.reweMarket&&meta.reweMarket.street?" ("+esc(meta.reweMarket.street)+", "+esc(meta.reweMarket.city||"")+")":""} abgerufen.`;
+  if(i.kind==="offer")return `Angebot aus dem aktuellen Prospekt${i.from||i.until?`, gültig ${i.from?"vom "+dfmt(i.from)+" ":""}${i.until?"bis "+dfmt(i.until):""}`:""}`;
+  if(i.kind==="derived")return `${STORES[si][1]} veröffentlicht keine normalen Preise online. Geschätzt nach dem Live-Preis der vergleichbaren ${i.src==="aldi"?"Aldi":"Rewe"}-Ware.`;
+  if(i.kind==="own")return `Von dir am ${dfmt(i.t)} eingetragen. Gilt nur auf diesem Gerät.`;
+  return "Für dieses Produkt wurde gerade kein passender Live-Preis gefunden. Erfahrungswert.";
+}
+function openCell(pid,si){
+  const p=allProducts().find(x=>x.id===pid);if(!p)return;
+  const i=info(p,si)||{kind:"estimate",v:null};
+  const [kl,kc]=KIND[i.kind];
+  const d=i.kind==="own"?i.data:i;
+  let h=`<button class="x" type="button" onclick="dlg.close()" aria-label="Schließen">×</button><h3>${esc(p.n)}</h3><div class="mut">${STORES[si][1]} · Preis für ${esc(p.u)}</div>`;
+  h+=`<div class="big">${i.v!=null?(isEst(i)?"≈ ":"")+eur(i.v):"kein Preis"}</div><span class="tag ${kc}">${kl}</span>${i.loyalty?` <span class="tag t-offer">nur mit App/Kundenkarte</span>`:""}`;
+  h+=`<div class="box"><p>${sourceText(i,si)}</p>`;
+  const show=d&&d.name?d:(d&&d.kind==="derived"?null:null);
+  if(show){
+    h+=`<p><b>Gefundenes Produkt:</b> ${esc(show.name)}</p>`;
+    if(show.perKg)h+=`<p>Wird nach Gewicht verkauft. ${eur(show.packPrice)} je Stück ${esc(show.pack)} → ${eur(show.v)} für ${esc(p.u)}.</p>`;
+    else h+=`<p>Packungspreis: <b>${eur(show.packPrice)}</b>${show.pack?" für "+esc(show.pack):""}${show.ratio&&Math.abs(show.ratio-1)>0.02?` → umgerechnet auf ${esc(p.u)}: <b>${eur(show.v)}</b>`:""}</p>`;
+    if(show.desc)h+=`<p class="mut">Prospekttext: ${esc(show.desc)}</p>`;
+    if(show.regular)h+=`<p class="mut">Normalpreis: ${eur(show.regular)}</p>`;
+    if(show.kind==="live"&&show.until)h+=`<p class="mut">Aktionspreis bis ${dfmt(show.until)}</p>`;
+    if(show.url)h+=`<p><a href="${esc(show.url)}" target="_blank" rel="noopener">Beim Anbieter ansehen ↗</a></p>`;
+  } else if(d&&d.kind==="derived"&&d.ref){h+=`<p class="mut">Vergleichsprodukt: ${esc(d.ref)}</p>`}
+  h+=`</div>`;
+  const alt=d&&(d.base||d.offer);
+  if(alt&&alt.v!=null){const ak=KIND[alt.kind];h+=`<div class="box"><p><span class="tag ${ak[1]}">${ak[0]}</span> ${isEst(alt)?"≈ ":""}<b>${eur(alt.v)}</b>${alt.name?" · "+esc(alt.name):""}${alt.kind==="offer"&&alt.until?" · bis "+dfmt(alt.until):""}${alt.loyalty?" · nur mit App":""}</p></div>`}
+  h+=`<div><b>Im Laden einen anderen Preis gesehen?</b><div class="own"><input id="ownV" inputmode="decimal" placeholder="z. B. 1,29" value="${i.kind==="own"?String(i.v).replace(".",","):""}"><button class="btn" type="button" id="ownSave">Speichern</button>${i.kind==="own"?`<button class="btn ghost" type="button" id="ownDel">Wieder Live-Preis nutzen</button>`:""}</div><p class="mut" style="font-size:12px;margin:6px 0 0">Preis für ${esc(p.u)} eintragen.</p></div>`;
+  $("#dlgBody").innerHTML=h;
+  $("#ownSave").onclick=()=>{const v=parseFloat($("#ownV").value.replace(",","."));if(!(v>0&&v<1000)){toast("Bitte einen gültigen Preis eingeben");return}(st.over[p.id]=st.over[p.id]||{})[STORES[si][0]]={v,t:new Date().toISOString()};save();dlg.close();render();toast("Preis gespeichert")};
+  const del=$("#ownDel");if(del)del.onclick=()=>{delete st.over[p.id][STORES[si][0]];save();dlg.close();render()};
+  dlg.showModal();
+}
+
+// Live-Suche
+async function webSearch(){
+  const q=$("#q").value.trim();
+  if(q.length<2){toast("Bitte erst ein Produkt eintippen");$("#q").focus();return}
+  if(!st.plz){toast("Bitte zuerst deine Postleitzahl eingeben");$("#plz").focus();return}
+  $("#results").innerHTML=`<div class="res"><i class="spin"></i> Suche „${esc(q)}“ bei Aldi, Rewe und in allen Prospekten …</div>`;
+  try{
+    const r=await fetch(`/api/search?q=${encodeURIComponent(q)}&plz=${st.plz}`);const j=await r.json();
+    if(!r.ok)throw new Error(j.error);
+    searchRes=[];
+    const add=(list,store,kind)=>Array.isArray(list)&&list.forEach(it=>searchRes.push({...it,store:it.store||store,kind}));
+    add(j.aldi,"aldi","live");add(j.rewe,"rewe","live");add(j.offers,null,"offer");
+    searchRes.sort((a,b)=>a.price-b.price);
+    renderResults(q);
+  }catch(e){$("#results").innerHTML=`<div class="res">Die Suche hat gerade nicht geklappt. Bitte gleich noch einmal versuchen.</div>`}
+}
+function renderResults(q){
+  const list=searchRes.slice(0,24);
+  let h=`<div class="res"><h3><span>Live-Ergebnisse für „${esc(q)}“ (${searchRes.length})</span><button class="btn ghost" type="button" id="closeRes">Schließen</button></h3>`;
+  if(!list.length)h+=`<p class="mut">Nichts gefunden. Versuche einen allgemeineren Begriff (z. B. „Kaffee“ statt „Kaffee Crema ganze Bohne“).</p>`;
+  else h+=`<div class="rgrid">${list.map((it,k)=>{const sn=(STORES.find(s=>s[0]===it.store)||[0,it.storeName||""])[1];return `<div class="ri"><span class="st">${esc(sn)} · ${it.kind==="offer"?`<span style="color:var(--off)">Angebot${it.until?" bis "+dfmt(it.until):""}</span>`:"Live-Preis"}${it.loyalty?" · App":""}</span><span class="nm">${esc(it.name)}</span><span class="mut">${esc(it.sizeText||it.desc||"")}</span><span class="pr">${eur(it.price)}${it.regular?` <s class="mut" style="font-size:13px;font-weight:400">${eur(it.regular)}</s>`:""}</span><button class="btn" type="button" data-r="${k}">+ In meinen Korb</button></div>`}).join("")}</div>`;
+  h+=`<p class="mut" style="font-size:12px;margin:8px 0 0">„In meinen Korb“ legt das Produkt in deine Liste und sucht automatisch die vergleichbaren Preise bei allen Märkten.</p></div>`;
+  $("#results").innerHTML=h;
+}
+const UNAME={g:"g",ml:"ml",stk:"Stück",wl:"WL",rolle:"Rollen"};
+async function addFromResult(k){
+  const it=searchRes[k];if(!it)return;
+  const sz=(it.sizes||[])[0]||{a:1,u:"stk"};
+  let a=sz.a,u=sz.u,ut;
+  if(u==="g"&&a>=1000)ut=(a/1000).toLocaleString("de-DE")+" kg";else if(u==="ml"&&a>=1000)ut=(a/1000).toLocaleString("de-DE")+" l";else ut=a.toLocaleString("de-DE")+" "+UNAME[u];
+  const q=$("#q").value.trim();
+  const id="c"+Date.now().toString(36);
+  const name=it.name.length>48?it.name.slice(0,46)+"…":it.name;
+  const c={id,n:name,u:ut,q,a,uu:u,c:-1,est:null};
+  st.custom.push(c);st.qty[id]=1;
+  // Den gewählten Treffer selbst als Preis merken, falls die automatische Suche ihn nicht findet
+  const si=STORES.findIndex(s=>s[0]===it.store);
+  save();toast("Hinzugefügt – suche Preise bei allen Märkten …");
+  $("#results").innerHTML="";$("#q").value="";st.cat=-1;render();
+  await loadCustom([c]);
+  const arr=prices[id]||(prices[id]=[null,null,null,null,null]);
+  if(si>=0&&!arr[si])arr[si]={v:it.price,kind:it.kind,name:it.name,packPrice:it.price,pack:it.sizeText||"",ratio:1,until:it.until||null,from:it.from||null,loyalty:!!it.loyalty,url:it.url||null,regular:it.regular||null};
+  render();
+}
+
+// Ereignisse
+$("#plzForm").onsubmit=e=>{e.preventDefault();const v=$("#plz").value.trim();if(!/^\d{5}$/.test(v)){toast("Bitte eine 5-stellige Postleitzahl eingeben");return}st.plz=v;save();loadPrices()};
+$("#q").oninput=()=>renderList();
+$("#q").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();webSearch()}};
+$("#webSearch").onclick=webSearch;
+$("#onlyBasket").onclick=e=>{st.only=!st.only;e.currentTarget.setAttribute("aria-pressed",st.only);e.currentTarget.classList.toggle("light",st.only);e.currentTarget.textContent=st.only?"Alle Produkte":"Nur mein Korb";save();renderList()};
+$("#cats").onclick=e=>{const b=e.target.closest("button");if(!b)return;st.cat=+b.dataset.c;save();renderCats();renderList()};
+$("#results").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.id==="closeRes")$("#results").innerHTML="";else if(b.dataset.r!=null)addFromResult(+b.dataset.r)};
+$("#list").onclick=e=>{
+  const b=e.target.closest("button");if(!b)return;
+  if(b.dataset.a){st.qty[b.dataset.a]=(st.qty[b.dataset.a]||0)+1;save();renderList();renderBon()}
+  else if(b.dataset.m){const n=(st.qty[b.dataset.m]||0)-1;if(n>0)st.qty[b.dataset.m]=n;else delete st.qty[b.dataset.m];save();renderList();renderBon()}
+  else if(b.dataset.del){st.custom=st.custom.filter(c=>c.id!==b.dataset.del);delete st.qty[b.dataset.del];save();render()}
+  else if(b.dataset.p)openCell(b.dataset.p,+b.dataset.i);
+};
+$("#bon").onclick=async e=>{
+  if(e.target.id==="clear"){if(confirm("Korb wirklich leeren?")){st.qty={};save();render()}}
+  if(e.target.id==="share"){
+    const {items,t}=totals();const order=STORES.map((s,i)=>[s[1],t[i].sum]).sort((a,b)=>a[1]-b[1]);
+    const txt="Einkaufsliste (Korbcheck)\n"+items.map(p=>`${st.qty[p.id]}× ${p.n} (${p.u})`).join("\n")+`\n\nAm günstigsten: ${order[0][0]} ${eur(order[0][1])}`;
+    if(navigator.share)navigator.share({text:txt}).catch(()=>{});else{await navigator.clipboard.writeText(txt).catch(()=>{});toast("Liste kopiert")}
+  }
+};
+const dlg=$("#dlg");dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+
+(async()=>{
+  $("#plz").value=st.plz||"";
+  if(st.only){const b=$("#onlyBasket");b.setAttribute("aria-pressed","true");b.classList.add("light");b.textContent="Alle Produkte"}
+  render();
+  try{await loadProducts()}catch{lastErr="Die Seite konnte nicht geladen werden. Bitte neu laden."}
+  render();
+  if(st.plz)loadPrices();else $("#plz").focus();
+})();
+</script>
+</body>
+</html>

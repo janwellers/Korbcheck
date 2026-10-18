@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: korbcheck
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: "true"
+    startCommand: node server.js
+    healthCheckPath: /api/health
