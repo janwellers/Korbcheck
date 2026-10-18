@@ -60,7 +60,7 @@ header.top .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;ju
 .pn .del{border:0;background:none;color:var(--mut);font-size:12px;padding:0;text-decoration:underline}
 .cell{position:relative;border:1px solid transparent;background:none;border-radius:9px;padding:6px 2px;text-align:center;line-height:1.15;min-height:44px}
 .cell:hover{border-color:var(--line);background:var(--bg)}
-.cell .v{font-weight:650;font-variant-numeric:tabular-nums}
+.cell .v{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cell .k{display:block;font-size:10.5px;color:var(--mut);margin-top:2px}
 .cell.live .v::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-right:4px;vertical-align:2px}
 .cell.offer .v{color:var(--off)}
@@ -78,6 +78,8 @@ header.top .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;ju
  .thead{display:none}
  .row{grid-template-columns:repeat(5,1fr);gap:4px 2px}
  .pn{grid-column:1/4}.qty{grid-column:4/6;grid-row:1}
+ .cell{padding:5px 0;min-height:40px}.cell .v{font-size:12.5px;letter-spacing:-.02em}.cell .k{font-size:9.5px}
+ .tools .btn{flex:1 1 40%;padding:9px 8px}
  .cell::after{content:attr(data-s);display:block;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em;margin-top:2px}
 }
 .empty{padding:28px;text-align:center;color:var(--mut)}
