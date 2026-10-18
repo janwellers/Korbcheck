@@ -286,7 +286,8 @@ function renderList(){
 
 function totals(){
   const items=allProducts().filter(p=>st.qty[p.id]>0);
-  const t=STORES.map((_,si)=>{let sum=0,est=0,miss=0;for(const p of items){const i=info(p,si);if(!i){miss++;continue}sum+=i.v*st.qty[p.id];if(isEst(i))est++}return {sum,est,miss}});
+  // Fehlt ein Preis, wird der Durchschnitt der anderen Märkte angesetzt, damit die Summen vergleichbar bleiben
+  const t=STORES.map((_,si)=>{let sum=0,est=0,miss=0;for(const p of items){let i=info(p,si);if(!i){const o=STORES.map((_,k)=>info(p,k)).filter(Boolean);if(!o.length)continue;miss++;est++;sum+=o.reduce((a,x)=>a+x.v,0)/o.length*st.qty[p.id];continue}sum+=i.v*st.qty[p.id];if(isEst(i))est++}return {sum,est,miss}});
   let split=0;const plan={};
   for(const p of items){let b=null;STORES.forEach((s,si)=>{const i=info(p,si);if(i&&(!b||i.v<b.v))b={v:i.v,si}});if(b){split+=b.v*st.qty[p.id];(plan[b.si]=plan[b.si]||[]).push(p)}}
   return {items,t,split,plan};
@@ -299,12 +300,10 @@ function renderBon(){
     $("#bon").innerHTML=`<h2>Dein Einkaufskorb</h2><div class="sub">Lege Produkte mit <b>+</b> in den Korb. Hier siehst du dann sofort, welcher Markt insgesamt am günstigsten ist.</div>`;
     $("#mbar").innerHTML=`<span class="mut">Korb ist leer</span>`;return;
   }
-  const order=STORES.map((s,si)=>({si,...t[si]})).filter(x=>!x.miss).sort((a,b)=>a.sum-b.sum);
-  const partial=STORES.map((s,si)=>({si,...t[si]})).filter(x=>x.miss);
+  const order=STORES.map((s,si)=>({si,...t[si]})).sort((a,b)=>a.sum-b.sum);
   const max=Math.max(...order.map(o=>o.sum),0.01);
   let h=`<h2>Dein Einkaufskorb</h2><div class="sub">${count} Artikel · Summe je Markt</div>`;
-  order.forEach((o,k)=>{h+=`<div class="tot${k===0?" win":""}"><span class="n">${STORES[o.si][1]}${k===0?' <span class="tag t-live">am günstigsten</span>':""}</span><span class="s">${eur(o.sum)}</span><div class="bar"><i style="width:${Math.round(o.sum/max*100)}%"></i></div>${o.est?`<small>${o.est} von ${items.length} Preisen geschätzt</small>`:""}</div>`});
-  partial.forEach(o=>{h+=`<div class="tot"><span class="n">${STORES[o.si][1]}</span><span class="s mut">${eur(o.sum)}</span><small>unvollständig: ${o.miss} Produkt(e) dort ohne Preis</small></div>`});
+  order.forEach((o,k)=>{h+=`<div class="tot${k===0?" win":""}"><span class="n">${STORES[o.si][1]}${k===0?' <span class="tag t-live">am günstigsten</span>':""}</span><span class="s">${eur(o.sum)}</span><div class="bar"><i style="width:${Math.round(o.sum/max*100)}%"></i></div>${o.est?`<small>${o.est} von ${items.length} Preisen geschätzt${o.miss?` (davon ${o.miss} dort nicht gefunden)`:""}</small>`:""}</div>`});
   if(order.length>1){
     const best=order[0],worst=order[order.length-1];
     h+=`<div class="save">Bei <b>${STORES[best.si][1]}</b> sparst du <b>${eur(worst.sum-best.sum)}</b> gegenüber ${STORES[worst.si][1]}.`;
