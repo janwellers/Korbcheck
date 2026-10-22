@@ -25,12 +25,13 @@ const blockedUntil = {};
 async function getJson(url, headers = {}, timeoutMs = 12000) {
   const host = new URL(url).host;
   for (let attempt = 0; ; attempt++) {
-    if ((blockedUntil[host] || 0) > Date.now()) throw new Error(`HTTP 429 ${host}`);
+    const b = blockedUntil[host];
+    if (b && b.until > Date.now()) throw new Error(`HTTP ${b.status} ${host}`);
     const res = await fetch(url, { headers: { ...BASE_HEADERS, Accept: "application/json", ...headers }, signal: AbortSignal.timeout(timeoutMs) });
     if (res.ok) return res.json();
     if ((res.status === 429 || res.status >= 500) && attempt < 2) { await sleep(1500 * (attempt + 1) ** 2); continue; }
-    // Bei Sperre kurz Pause, um den Anbieter nicht weiter zu belasten
-    if (res.status === 429) blockedUntil[host] = Date.now() + 3 * 60e3;
+    // 403 = Anbieter sperrt diesen Server, nicht weiter nachfragen
+    if (res.status === 429 || res.status === 403) blockedUntil[host] = { status: res.status, until: Date.now() + (res.status === 403 ? 30 : 3) * 60e3 };
     throw new Error(`HTTP ${res.status} ${host}`);
   }
 }

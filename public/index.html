@@ -240,7 +240,7 @@ function renderStatus(){
     if(m.street&&!m.fallback)h+=`<span>Rewe-Markt: <b>${esc(m.street)}, ${esc(m.city||"")}</b></span>`;
     h+=`<span><b>${nl}</b> Live-Preise · <b>${no}</b> Angebote</span>`;
     const bad=Object.keys(meta.status||{});
-    if(bad.length)h+=`<div class="warn" style="flex-basis:100%">Gerade nicht erreichbar: ${bad.map(b=>({aldi:"Aldi",rewe:"Rewe",angebote:"Prospekt-Angebote"}[b]||b)).join(", ")}. Dort werden Schätzwerte gezeigt.</div>`;
+    if(bad.length){const nm=bad.map(b=>({aldi:"Aldi",rewe:"Rewe",angebote:"Prospekt-Angebote"}[b]||b)).join(" und "),blk=bad.filter(b=>/403/.test(meta.status[b])).length===bad.length;h+=`<div class="warn" style="flex-basis:100%">${blk?`<b>${nm}</b> ${bad.length>1?"lassen":"lässt"} Preisabfragen von unserem Server gerade nicht zu. Angebote aus dem Prospekt sind trotzdem aktuell. Normale Preise ${bad.length>1?"dieser Märkte":"dieses Marktes"} sind Schätzwerte (grau, mit „≈“).`:`Gerade nicht erreichbar: ${nm}. Dort werden Schätzwerte gezeigt.`}</div>`}
   }
   if(lastErr)h+=`<div class="warn" style="flex-basis:100%">${esc(lastErr)}</div>`;
   el.innerHTML=h;
